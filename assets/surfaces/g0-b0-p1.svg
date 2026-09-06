@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="340" height="410" viewBox="0 0 340 410" role="img" aria-labelledby="title desc">
+<title id="title">Surface of genus 0, with 0 boundary components and 1 punctures</title>
+<desc id="desc">APS standard surface layout. Symmetric genus-zero surface; 0 boundary circles above and 1 punctures below. Marked points are omitted. Dashed segments lie on the hidden sheet. The alpha and beta curves form a symplectic basis after capping boundaries and filling punctures.</desc>
+<style>.body{fill:url(#surface-fill);stroke:#2b6555;stroke-width:1.3}.opening{fill:#ffffff;stroke:#2b6555;stroke-width:1.3}.curve{fill:none;stroke:#2b6555;stroke-width:1.6}.alpha{stroke:#20563f}.beta{stroke:#397d77}.hidden{stroke-dasharray:4 4;opacity:.7}.label{font:italic 19px Georgia,serif;fill:#282e2a}.alpha-label{fill:#20563f}.beta-label{fill:#397d77}.arrow{fill:#2b6555}.arrow-alpha{fill:#20563f}.arrow-beta{fill:#397d77}</style>
+<defs><linearGradient id="surface-fill" x2="0" y2="1"><stop stop-color="#b4cdbb"/><stop offset="1" stop-color="#edf4ee"/></linearGradient><marker id="arrow" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path class="arrow" d="M 1 1 L 7 4 L 1 7 L 3 4 Z"/></marker><marker id="arrow-alpha" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path class="arrow-alpha" d="M 1 1 L 7 4 L 1 7 L 3 4 Z"/></marker><marker id="arrow-beta" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path class="arrow-beta" d="M 1 1 L 7 4 L 1 7 L 3 4 Z"/></marker></defs>
+<rect width="340" height="410" fill="#ffffff"/>
+<path d="M 90 200 L 250 200 C 277.614 200 300 217.909 300 240 C 300 262.091 277.614 280 250 280 L 210 280 C 180 280 174 320 173 354 Q 170 360 167 354 C 166 320 160 280 130 280 L 90 280 C 62.386 280 40 262.091 40 240 C 40 217.909 62.386 200 90 200 Z" class="body"/>
+<g data-puncture="1"><circle class="opening" cx="170" cy="355" r="3"/><ellipse class="curve hidden" cx="170" cy="307" rx="15" ry="6"/><path class="curve" d="M 155 307 A 15 6 0 0 0 185 307"/><path class="curve" d="M 174 313 L 166 313" marker-end="url(#arrow)"/>
+<text x="190" y="316" class="label ">c<tspan baseline-shift="sub" font-size="12">1</tspan></text>
+</g>
+</svg>

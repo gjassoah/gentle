@@ -1,0 +1,44 @@
+import assert from 'node:assert/strict';
+import {mkdirSync,existsSync,readFileSync,writeFileSync} from 'node:fs';
+import {examples} from '../src/examples.js';
+const pages=await(await fetch('http://127.0.0.1:9222/json')).json();
+const ws=new WebSocket(pages.find(p=>p.type==='page').webSocketDebuggerUrl);await new Promise(r=>ws.onopen=r);
+let id=0;const pending=new Map(),errors=[];
+ws.onmessage=e=>{const x=JSON.parse(e.data);if(x.id){const p=pending.get(x.id);pending.delete(x.id);x.error?p.reject(Error(x.error.message)):p.resolve(x.result)}else if(x.method==='Runtime.exceptionThrown')errors.push(x.params.exceptionDetails.exception?.description||x.params.exceptionDetails.text)};
+const send=(method,params={})=>new Promise((resolve,reject)=>{const i=++id;pending.set(i,{resolve,reject});ws.send(JSON.stringify({id:i,method,params}))});
+const evaluate=async expression=>{const r=await send('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true});if(r.exceptionDetails)throw Error(r.exceptionDetails.exception?.description||r.exceptionDetails.text);return r.result.value};
+const waitFor=async expr=>{for(let i=0;i<150;i++){if(await evaluate(expr))return;await new Promise(r=>setTimeout(r,100))}throw Error('Timed out: '+expr)};
+const click=s=>evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);
+const change=(s,value)=>evaluate(`document.querySelector(${JSON.stringify(s)}).value=${JSON.stringify(value)};document.querySelector(${JSON.stringify(s)}).dispatchEvent(new Event('change'))`);
+const result=()=>evaluate(`document.querySelector('#results').textContent`);
+const switchTo=async id=>{await click(`[data-algebra="${id}"]`);await waitFor(`document.querySelector('[data-algebra="${id}"]').getAttribute('aria-selected')==='true'`)};
+await send('Runtime.enable');await send('Page.enable');await send('Page.navigate',{url:'http://127.0.0.1:5173/'});await waitFor(`!!document.querySelector('#algebra-tabs')`);
+// Use only a disposable Chromium profile: this intentionally replaces its test session.
+const session={format:'gentle-session-v2',activeId:'dual',algebras:[{id:'dual',quiver:examples.dual,characteristic:'2',degree:3},{id:'aps1',quiver:examples.aps1,characteristic:'0',degree:1},{id:'aps2',quiver:examples.aps2,characteristic:'0',degree:1}]};
+await evaluate(`localStorage.setItem('gentle-session-v2',${JSON.stringify(JSON.stringify(session))})`);await send('Page.reload');await waitFor(`document.querySelector('#progress')?.textContent.includes('Complete')`);
+await click('[data-tab="cohomology"]');await change('#basis-degree','1');
+assert.deepEqual(await evaluate(`[...document.querySelectorAll('.cochain-output')].map(x=>x.textContent)`),['1 · e(1)idempotent','1 · εpath']);
+await click('[data-tab="homology"]');assert.deepEqual(await evaluate(`[...document.querySelectorAll('.chain-leading')].map(x=>x.textContent)`),['e(1)idempotent','εpath']);
+await click('[data-tab="operations"]');await evaluate(`document.querySelector('#left-0').value='3';document.querySelector('#left-0').dispatchEvent(new Event('input',{bubbles:true}))`);await click('#run-operation');await waitFor(`!!document.querySelector('.operation-result')`);
+await switchTo('aps1');await click('[data-tab="derived"]');await click('#compute-derived');await waitFor(`document.querySelector('#derived-output')?.textContent.includes('gcd = 0')`);
+await change('#compare-target','aps2');await click('#compare-derived');await waitFor(`document.querySelector('#comparison-output')?.textContent.includes('Not derived equivalent')`);
+const downloads='/tmp/gentle-derived-download-'+Date.now();mkdirSync(downloads);await send('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:downloads});await click('#derived-tex');
+for(let i=0;i<50&&!existsSync(downloads+'/gentle-derived.tex');i++)await new Promise(r=>setTimeout(r,100));
+assert.match(readFileSync(downloads+'/gentle-derived.tex','utf8'),/Genus-one gcd: \$2\$/);
+await switchTo('aps2');await click('[data-tab="derived"]');assert.match(await result(),/gcd = 2/);
+await switchTo('dual');assert.match(await result(),/Calculation history/);assert.match(await result(),/1\. cup/);assert.equal(await evaluate(`document.querySelector('#left-0').value`),'3');await click('#run-operation');await waitFor(`!!document.querySelector('.operation-result')`);
+await click('[data-close-algebra="dual"]');await waitFor(`!document.querySelector('[data-algebra="dual"]')`);await click('#reopen-algebra');await waitFor(`document.querySelector('[data-algebra="dual"]')?.getAttribute('aria-selected')==='true'`);await click('#run-operation');await waitFor(`!!document.querySelector('.operation-result')`);
+await switchTo('aps1');await click('#duplicate-algebra');await waitFor(`document.querySelector('#name').value.includes('(copy)')`);const copyId=await evaluate(`document.querySelector('[data-algebra][aria-selected=true]').dataset.algebra`);
+await click('[data-tab="derived"]');await change('#compare-target','aps1');await click('#compare-derived');await waitFor(`document.querySelector('#comparison-output strong')?.textContent==='Derived equivalent'`);
+await change('#characteristic','2');await change('#compare-target','aps1');await click('#compare-derived');await waitFor(`document.querySelector('#comparison-output strong')?.textContent==='Different ground fields'`);
+await click(`[data-close-algebra="${copyId}"]`);await waitFor(`document.querySelectorAll('[data-algebra]').length===3`);await click('#reopen-algebra');await waitFor(`document.querySelectorAll('[data-algebra]').length===4`);assert.equal(await evaluate(`document.querySelector('#characteristic').value`),'2');
+await switchTo('aps2');await click('[data-remove-relation="0"]');await switchTo('aps1');assert.match(await result(),/Compare again to update/);
+// Cancellation on switching must not write the old calculation into the new tab.
+await switchTo('dual');await evaluate(`document.querySelector('#compute').click();document.querySelector('[data-algebra="aps1"]').click()`);await waitFor(`document.querySelector('[data-algebra="aps1"]').getAttribute('aria-selected')==='true'`);assert.match(await result(),/gcd = 0/);
+await click('#export');await click('#export-session');for(let i=0;i<50&&!existsSync(downloads+'/gentle-session.json');i++)await new Promise(r=>setTimeout(r,100));assert.equal(JSON.parse(readFileSync(downloads+'/gentle-session.json','utf8')).algebras.length,4);await click('#close-modal');
+await send('DOM.enable');const doc=await send('DOM.getDocument');const node=await send('DOM.querySelector',{nodeId:doc.root.nodeId,selector:'#file'});await send('DOM.setFileInputFiles',{nodeId:node.nodeId,files:[downloads+'/gentle-session.json']});await waitFor(`document.querySelectorAll('[data-algebra]').length===8`);
+await send('Page.reload');await waitFor(`document.querySelectorAll('[data-algebra]').length===8`);await waitFor(`document.querySelector('#progress')?.textContent.includes('Complete')`);
+await click('[data-tab="derived"]');await click('#compute-derived');await waitFor(`!!document.querySelector('#derived-tex')`);
+for(const width of [390,768,1440]){await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<800});assert.ok(await evaluate(`document.documentElement.scrollWidth<=innerWidth`),'horizontal overflow at '+width);await click('#theme')}
+await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true}).then(x=>writeFileSync('/tmp/gentle-derived-desktop.png',Buffer.from(x.data,'base64')));
+assert.deepEqual(errors,[]);console.log('Derived browser checks passed: char-2 representatives, independent tabs and histories, comparison, field mismatch, stale comparisons, cancellation, close/reopen, session import/reload, LaTeX and responsive layout.');ws.close();

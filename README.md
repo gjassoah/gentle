@@ -1,0 +1,104 @@
+# Gentle — a calculus workspace
+
+A responsive, static web application for finite-dimensional gentle algebras. Draw a quiver, choose vertex and arrow labels, click consecutive arrows to impose quadratic zero relations, and compute with exact coefficients.
+
+Based on Chaparro, Schroll, Solotar and Suárez-Álvarez, [*The Hochschild cohomology and the Tamarkin–Tsygan calculus of gentle algebras*, arXiv:2311.08003v4](https://arxiv.org/abs/2311.08003v4).
+
+Derived equivalence uses Amiot, Plamondon and Schroll, [*A complete derived invariant for gentle algebras via winding numbers and Arf invariants*](https://doi.org/10.1007/s00029-022-00822-x), Theorem 7.4.
+
+## Run
+
+```sh
+npm start
+```
+
+Open **http://localhost:5173**. This uses Python 3's static HTTP server. There are **no npm dependencies to install** and no backend, accounts, API keys, or database. Alternatively, serve this directory with any static HTTP server. ES modules and workers require HTTP(S), rather than opening `index.html` as a `file://` URL.
+
+## Deploy
+
+```sh
+npm run build
+```
+
+Upload the contents of `dist/` to any static web host. No routing rewrites or server-side runtime are needed. The app works at either a domain root or a subdirectory. Serve JavaScript with its standard MIME type. For a local deployment preview:
+
+```sh
+python3 -m http.server 5173 --directory dist
+```
+
+Only the application and its documentation are copied into `dist/`. Computation takes place in a browser worker. Workspaces are saved to local storage on that browser; use JSON exports to transfer or back them up.
+
+## Features
+
+- Mouse and touch quiver editor, loops, parallel arrows, movable vertices, editable labels, zero relations, undo/redo, and keyboard controls.
+- Light/dark modes, seven examples (including the distinguishing pair in APS §9), JSON import/export and browser-local persistence.
+- Multiple algebra tabs with separate fields, editing histories, computed reports and operation histories. New, duplicate, close and reopen controls; whole-session JSON export/import.
+- Gentle-condition and finite-dimensionality validation.
+- Exact rational arithmetic or prime-field arithmetic, including characteristic two.
+- Hochschild cohomology and homology: dimensions and explicit quotient-basis representatives.
+- Cup product, Gerstenhaber bracket, signed cap product, Connes operator, and a documented normalization of the Lie derivative on homogeneous linear combinations.
+- Cyclic homology from the mixed-complex totalization; de Rham dimensions and Connes ranks.
+- All-degree cohomology and homology families, full cohomology ring presentation, and formula queries through degree 100000.
+- Bardzell-resolution group queries independently of the bar-complex range.
+- Complete HH¹ bracket table, center, and derived series.
+- Algebra dimension, global dimension, permitted/forbidden paths, complete circuits, spanning-forest complement, and path-count matrix.
+- Combinatorial marked ribbon graph, boundary components, genus, winding data, and the AAG invariant.
+- Standard surface diagrams in the APS page-23 layout, with symplectic α/β curves, boundary collars and punctures; separate diagrams for disconnected components, SVG downloads and horizontal scrolling on mobile.
+- Complete derived invariant: connected-component surface and boundary/puncture data, genus-one gcd, higher-genus parity and Arf branches. Compare any two tabs over the same field, directly from their quivers without computing the bar complex.
+- Standalone LaTeX report with the presentation, representatives, structural data, checks, and operation history. Compile with LuaLaTeX.
+- Separate JSON and LaTeX exports of the derived invariant, cycle/intersection evidence, and comparison with both input presentations.
+
+Choose **New tab** to draw another algebra or **Duplicate** to start from the current presentation. Loading an example replaces the current presentation (Undo recovers it); opening JSON adds tabs. Switching tabs cancels an unfinished calculation and retains completed reports and histories. Up to 40 tabs are supported. Quivers and field/degree settings survive reloads; reports and histories remain in memory during the session and should be exported before reloading. Previously saved single-quiver workspaces migrate automatically.
+
+Open **Complete derived invariant**, compute the invariant or select another algebra tab and compare. For a useful check, load APS Λ₁ and Λ₂ into separate tabs: they have the same AAG invariant but gcd values 0 and 2, so they are not derived equivalent. A comparison becomes stale when either presentation or field changes.
+
+## Mathematical scope
+
+Read [METHODOLOGY.md](METHODOLOGY.md) before comparing numerical representatives with the paper. In particular, path multiplication is written in **left-to-right travel order**, and bases in the operation panels are deterministic row-reduced bar bases, not the paper's named circuit bases. The full ring and all-degree family panels use the paper's generator descriptions instead.
+
+Individual operations construct finite complexes. Current guardrails are 200 algebra basis paths, 900 vectors per complex space, 150000 enumeration steps, and degree 128. Formula queries do not construct these complexes. If the bar calculation hits a resource limit, the app falls back to exact circuit-based dimensions and labels the representatives as unavailable. Individual operation limits report an error; they never report a fabricated zero. These are complete calculations in the requested degrees when successful, not an unrestricted symbolic algebra system.
+
+The marked surface has a combinatorial description and a standard schematic drawing; interactive curve drawing/unwinding is not implemented. There is no symbolic polynomial parser, non-prime-field coefficient extension, periodic/negative cyclic homology, or claim of independent mathematical certification. Periodic and negative cyclic homology are not the cyclic invariant computed in the paper. This is a new implementation requiring independent review before relying on it for a research result.
+
+## Surface images
+
+The Surface tab works directly from the quiver, independently of the calculus degree and path-basis limits. The diagrams follow APS p. 23: handles on the left, boundary components above on the right, punctures below, and no marked points. Genus-zero diagrams have a symmetric body with centered boundary and puncture arrangements. Green light/dark variants match the application theme. The αᵢ/βᵢ curves form a standard geometric symplectic basis of the capped surface; the computed winding data use a separate ribbon-cycle basis γⱼ. Dashed curve segments lie on the hidden sheet.
+
+`assets/surfaces/` contains **1458 pre-generated SVGs** (light and dark variants of 729 surfaces), covering all triples with `0 ≤ g,b,p ≤ 8`. SVG keeps the diagrams sharp at any resolution and needs no image-generation service or browser rendering library. Images are served as ordinary static files. For larger triples, the app generates a lightweight SVG once and caches it during the session.
+
+To extend the static range:
+
+```sh
+npm run surfaces -- --genus 12 --boundaries 12 --punctures 12
+npm run build
+```
+
+The generator writes a manifest that the app reads automatically, so extending the range requires no source edits. `--output DIRECTORY` selects another destination; the application serves `assets/surfaces/`. A run is limited to 20000 themed images. Each component's **Download SVG** button exports a standalone, scalable image. The diagram viewport supports touch and keyboard horizontal scrolling.
+
+## Verification
+
+```sh
+npm test
+npm run check
+```
+
+Tests compare known examples in several characteristics, the small and bar resolutions, circuit formulas, and the mixed complex. Operation tests cover characteristic-two products, nonzero brackets and caps, Connes coefficients, graded commutativity, skew symmetry, Jacobi, the bracket derivation identity, and Cartan compatibility in the documented convention.
+
+Derived-invariant tests include the APS §9 pair, genus-zero examples, punctures, disconnected components, both higher-genus parity branches, and a genus-two pair with identical boundary data but different Arf invariants. Arf values are independently checked by Gauss sums. Three hundred deterministic generated presentations test relabeling and input-order invariance. Representative regressions check both characteristic-two classes in degrees 1–5 and both resolutions, plus the degree-zero cochain domain.
+
+`tests/browser.mjs` exercises the actual UI through Chromium's DevTools protocol with no test dependency. Start the app on port 5173, start headless Chromium with remote debugging on port 9222, then run `node tests/browser.mjs`. The test profile should be disposable; the script edits its saved workspace.
+
+`node tests/browser-derived.mjs` tests the new representative display, tab and worker isolation, comparison outcomes, stale comparisons, session persistence/import, LaTeX export and phone/tablet/desktop layout. It replaces the disposable profile's saved test session.
+
+`node tests/browser-surface.mjs` checks ordinary and label-collision characteristic-two representatives, static surface assets, disconnected surfaces, a genus-ten fallback beyond the calculus path limit, and mobile scrolling. Use a disposable browser profile for this test as well.
+
+## Files
+
+- `src/linear.js`: exact field arithmetic and linear algebra.
+- `src/engine.js`: complexes, quotient bases, operations and algebraic checks.
+- `src/structure.js`: circuits, all-degree formulas, ring and ribbon data.
+- `src/derived.js`: complete component invariants, cycle windings, intersection forms, symplectic reduction and derived-equivalence comparison.
+- `src/surface-diagram.js`, `scripts/generate-surfaces.mjs`: standard surface SVGs and static image generation.
+- `src/worker.js`: computation isolation and independent formula checks.
+- `src/app.js`, `src/style.css`: visual editor and responsive interface.
+- `src/export.js`: escaped, standalone LaTeX generation.

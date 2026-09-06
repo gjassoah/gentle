@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2010" height="410" viewBox="0 0 2010 410" role="img" aria-labelledby="title desc">
+<title id="title">Surface of genus 6, with 2 boundary components and 3 punctures</title>
+<desc id="desc">APS standard surface layout. 6 handles on the left with alpha and beta curves; 2 boundary circles at the upper right and 3 punctures below. Marked points are omitted. Dashed segments lie on the hidden sheet. The alpha and beta curves form a symplectic basis after capping boundaries and filling punctures.</desc>
+<style>.body{fill:url(#surface-fill);stroke:#9bc7ac;stroke-width:1.3}.opening{fill:#1d2521;stroke:#9bc7ac;stroke-width:1.3}.curve{fill:none;stroke:#9bc7ac;stroke-width:1.6}.alpha{stroke:#d0ead8}.beta{stroke:#80cdbd}.hidden{stroke-dasharray:4 4;opacity:.7}.label{font:italic 19px Georgia,serif;fill:#e4e9e1}.alpha-label{fill:#d0ead8}.beta-label{fill:#80cdbd}.arrow{fill:#9bc7ac}.arrow-alpha{fill:#d0ead8}.arrow-beta{fill:#80cdbd}</style>
+<defs><linearGradient id="surface-fill" x2="0" y2="1"><stop stop-color="#456951"/><stop offset="1" stop-color="#283d30"/></linearGradient><marker id="arrow" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path class="arrow" d="M 1 1 L 7 4 L 1 7 L 3 4 Z"/></marker><marker id="arrow-alpha" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path class="arrow-alpha" d="M 1 1 L 7 4 L 1 7 L 3 4 Z"/></marker><marker id="arrow-beta" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path class="arrow-beta" d="M 1 1 L 7 4 L 1 7 L 3 4 Z"/></marker></defs>
+<rect width="2010" height="410" fill="#1d2521"/>
+<path d="M 160 155 C 210 155 245 200 280 200 C 315 200 350 155 400 155 C 450 155 485 200 520 200 C 555 200 590 155 640 155 C 690 155 725 200 760 200 C 795 200 830 155 880 155 C 930 155 965 200 1000 200 C 1035 200 1070 155 1120 155 C 1170 155 1205 200 1240 200 C 1275 200 1310 155 1360 155 C 1410 155 1445 200 1480 200 L 1571.6666666666667 200 C 1596.6666666666667 200 1596.6666666666667 140 1596.6666666666667 85 L 1656.6666666666667 85 C 1656.6666666666667 140 1656.6666666666667 200 1681.6666666666667 200 L 1718.3333333333333 200 C 1743.3333333333333 200 1743.3333333333333 140 1743.3333333333333 85 L 1803.3333333333333 85 C 1803.3333333333333 140 1803.3333333333333 200 1828.3333333333333 200 L 1920 200 C 1947.614 200 1970 217.909 1970 240 C 1970 262.091 1947.614 280 1920 280 L 1865 280 C 1820 280 1814 320 1813 354 Q 1810 360 1807 354 C 1806 320 1800 280 1755 280 L 1755 280 C 1710 280 1704 320 1703 354 Q 1700 360 1697 354 C 1696 320 1690 280 1645 280 L 1645 280 C 1600 280 1594 320 1593 354 Q 1590 360 1587 354 C 1586 320 1580 280 1535 280 L 1480 280 C 1445 280 1405 325 1360 325 C 1315 325 1275 280 1240 280 C 1205 280 1165 325 1120 325 C 1075 325 1035 280 1000 280 C 965 280 925 325 880 325 C 835 325 795 280 760 280 C 725 280 685 325 640 325 C 595 325 555 280 520 280 C 485 280 445 325 400 325 C 355 325 315 280 280 280 C 245 280 205 325 160 325 C 93.726 325 40 286.944 40 240 C 40 193.056 93.726 155 160 155 Z" class="body"/>
+<g data-handle="1"><path class="opening" d="M 121 239 Q 160 218 199 239 Q 160 256 121 239 Z"/>
+<ellipse data-curve="alpha" class="curve alpha" cx="160" cy="239" rx="74" ry="38"/>
+<path data-curve="beta" class="curve beta" d="M 162 248 C 180 269 180 305 162 325"/><path class="curve beta hidden" d="M 162 325 C 142 302 142 268 162 248"/>
+<path class="curve alpha" d="M 232 230 Q 236 239 231 249" marker-end="url(#arrow-alpha)"/><path class="curve beta" d="M 175 283 L 175 297" marker-end="url(#arrow-beta)"/>
+<text x="242" y="244" class="label alpha-label">α<tspan baseline-shift="sub" font-size="12">1</tspan></text>
+<text x="189" y="310" class="label beta-label">β<tspan baseline-shift="sub" font-size="12">1</tspan></text>
+</g>
+<g data-handle="2"><path class="opening" d="M 361 239 Q 400 218 439 239 Q 400 256 361 239 Z"/>
+<ellipse data-curve="alpha" class="curve alpha" cx="400" cy="239" rx="74" ry="38"/>
+<path data-curve="beta" class="curve beta" d="M 402 248 C 420 269 420 305 402 325"/><path class="curve beta hidden" d="M 402 325 C 382 302 382 268 402 248"/>
+<path class="curve alpha" d="M 472 230 Q 476 239 471 249" marker-end="url(#arrow-alpha)"/><path class="curve beta" d="M 415 283 L 415 297" marker-end="url(#arrow-beta)"/>
+<text x="482" y="244" class="label alpha-label">α<tspan baseline-shift="sub" font-size="12">2</tspan></text>
+<text x="429" y="310" class="label beta-label">β<tspan baseline-shift="sub" font-size="12">2</tspan></text>
+</g>
+<g data-handle="3"><path class="opening" d="M 601 239 Q 640 218 679 239 Q 640 256 601 239 Z"/>
+<ellipse data-curve="alpha" class="curve alpha" cx="640" cy="239" rx="74" ry="38"/>
+<path data-curve="beta" class="curve beta" d="M 642 248 C 660 269 660 305 642 325"/><path class="curve beta hidden" d="M 642 325 C 622 302 622 268 642 248"/>
+<path class="curve alpha" d="M 712 230 Q 716 239 711 249" marker-end="url(#arrow-alpha)"/><path class="curve beta" d="M 655 283 L 655 297" marker-end="url(#arrow-beta)"/>
+<text x="722" y="244" class="label alpha-label">α<tspan baseline-shift="sub" font-size="12">3</tspan></text>
+<text x="669" y="310" class="label beta-label">β<tspan baseline-shift="sub" font-size="12">3</tspan></text>
+</g>
+<g data-handle="4"><path class="opening" d="M 841 239 Q 880 218 919 239 Q 880 256 841 239 Z"/>
+<ellipse data-curve="alpha" class="curve alpha" cx="880" cy="239" rx="74" ry="38"/>
+<path data-curve="beta" class="curve beta" d="M 882 248 C 900 269 900 305 882 325"/><path class="curve beta hidden" d="M 882 325 C 862 302 862 268 882 248"/>
+<path class="curve alpha" d="M 952 230 Q 956 239 951 249" marker-end="url(#arrow-alpha)"/><path class="curve beta" d="M 895 283 L 895 297" marker-end="url(#arrow-beta)"/>
+<text x="962" y="244" class="label alpha-label">α<tspan baseline-shift="sub" font-size="12">4</tspan></text>
+<text x="909" y="310" class="label beta-label">β<tspan baseline-shift="sub" font-size="12">4</tspan></text>
+</g>
+<g data-handle="5"><path class="opening" d="M 1081 239 Q 1120 218 1159 239 Q 1120 256 1081 239 Z"/>
+<ellipse data-curve="alpha" class="curve alpha" cx="1120" cy="239" rx="74" ry="38"/>
+<path data-curve="beta" class="curve beta" d="M 1122 248 C 1140 269 1140 305 1122 325"/><path class="curve beta hidden" d="M 1122 325 C 1102 302 1102 268 1122 248"/>
+<path class="curve alpha" d="M 1192 230 Q 1196 239 1191 249" marker-end="url(#arrow-alpha)"/><path class="curve beta" d="M 1135 283 L 1135 297" marker-end="url(#arrow-beta)"/>
+<text x="1202" y="244" class="label alpha-label">α<tspan baseline-shift="sub" font-size="12">5</tspan></text>
+<text x="1149" y="310" class="label beta-label">β<tspan baseline-shift="sub" font-size="12">5</tspan></text>
+</g>
+<g data-handle="6"><path class="opening" d="M 1321 239 Q 1360 218 1399 239 Q 1360 256 1321 239 Z"/>
+<ellipse data-curve="alpha" class="curve alpha" cx="1360" cy="239" rx="74" ry="38"/>
+<path data-curve="beta" class="curve beta" d="M 1362 248 C 1380 269 1380 305 1362 325"/><path class="curve beta hidden" d="M 1362 325 C 1342 302 1342 268 1362 248"/>
+<path class="curve alpha" d="M 1432 230 Q 1436 239 1431 249" marker-end="url(#arrow-alpha)"/><path class="curve beta" d="M 1375 283 L 1375 297" marker-end="url(#arrow-beta)"/>
+<text x="1442" y="244" class="label alpha-label">α<tspan baseline-shift="sub" font-size="12">6</tspan></text>
+<text x="1389" y="310" class="label beta-label">β<tspan baseline-shift="sub" font-size="12">6</tspan></text>
+</g>
+<g data-boundary="1"><ellipse class="opening" cx="1626.6666666666667" cy="85" rx="30" ry="10"/><ellipse class="curve hidden" cx="1626.6666666666667" cy="115" rx="33" ry="11"/><path class="curve" d="M 1593.6666666666667 115 A 33 11 0 0 0 1659.6666666666667 115"/><path class="curve" d="M 1631.6666666666667 126 L 1621.6666666666667 126" marker-end="url(#arrow)"/>
+<text x="1604.6666666666667" y="65" class="label ">∂<tspan baseline-shift="sub" font-size="12">1</tspan></text>
+<text x="1618.6666666666667" y="150" class="label ">c<tspan baseline-shift="sub" font-size="12">1</tspan></text>
+</g>
+<g data-boundary="2"><ellipse class="opening" cx="1773.3333333333333" cy="85" rx="30" ry="10"/><ellipse class="curve hidden" cx="1773.3333333333333" cy="115" rx="33" ry="11"/><path class="curve" d="M 1740.3333333333333 115 A 33 11 0 0 0 1806.3333333333333 115"/><path class="curve" d="M 1778.3333333333333 126 L 1768.3333333333333 126" marker-end="url(#arrow)"/>
+<text x="1751.3333333333333" y="65" class="label ">∂<tspan baseline-shift="sub" font-size="12">2</tspan></text>
+<text x="1765.3333333333333" y="150" class="label ">c<tspan baseline-shift="sub" font-size="12">2</tspan></text>
+</g>
+<g data-puncture="1"><circle class="opening" cx="1590" cy="355" r="3"/><ellipse class="curve hidden" cx="1590" cy="307" rx="15" ry="6"/><path class="curve" d="M 1575 307 A 15 6 0 0 0 1605 307"/><path class="curve" d="M 1594 313 L 1586 313" marker-end="url(#arrow)"/>
+<text x="1610" y="316" class="label ">c<tspan baseline-shift="sub" font-size="12">3</tspan></text>
+</g>
+<g data-puncture="2"><circle class="opening" cx="1700" cy="355" r="3"/><ellipse class="curve hidden" cx="1700" cy="307" rx="15" ry="6"/><path class="curve" d="M 1685 307 A 15 6 0 0 0 1715 307"/><path class="curve" d="M 1704 313 L 1696 313" marker-end="url(#arrow)"/>
+<text x="1720" y="316" class="label ">c<tspan baseline-shift="sub" font-size="12">4</tspan></text>
+</g>
+<g data-puncture="3"><circle class="opening" cx="1810" cy="355" r="3"/><ellipse class="curve hidden" cx="1810" cy="307" rx="15" ry="6"/><path class="curve" d="M 1795 307 A 15 6 0 0 0 1825 307"/><path class="curve" d="M 1814 313 L 1806 313" marker-end="url(#arrow)"/>
+<text x="1830" y="316" class="label ">c<tspan baseline-shift="sub" font-size="12">5</tspan></text>
+</g>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="510" height="410" viewBox="0 0 510 410" role="img" aria-labelledby="title desc">
+<title id="title">Surface of genus 1, with 0 boundary components and 0 punctures</title>
+<desc id="desc">APS standard surface layout. 1 handles on the left with alpha and beta curves; 0 boundary circles at the upper right and 0 punctures below. Marked points are omitted. Dashed segments lie on the hidden sheet. The alpha and beta curves form a symplectic basis after capping boundaries and filling punctures.</desc>
+<style>.body{fill:url(#surface-fill);stroke:#9bc7ac;stroke-width:1.3}.opening{fill:#1d2521;stroke:#9bc7ac;stroke-width:1.3}.curve{fill:none;stroke:#9bc7ac;stroke-width:1.6}.alpha{stroke:#d0ead8}.beta{stroke:#80cdbd}.hidden{stroke-dasharray:4 4;opacity:.7}.label{font:italic 19px Georgia,serif;fill:#e4e9e1}.alpha-label{fill:#d0ead8}.beta-label{fill:#80cdbd}.arrow{fill:#9bc7ac}.arrow-alpha{fill:#d0ead8}.arrow-beta{fill:#80cdbd}</style>
+<defs><linearGradient id="surface-fill" x2="0" y2="1"><stop stop-color="#456951"/><stop offset="1" stop-color="#283d30"/></linearGradient><marker id="arrow" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path class="arrow" d="M 1 1 L 7 4 L 1 7 L 3 4 Z"/></marker><marker id="arrow-alpha" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path class="arrow-alpha" d="M 1 1 L 7 4 L 1 7 L 3 4 Z"/></marker><marker id="arrow-beta" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path class="arrow-beta" d="M 1 1 L 7 4 L 1 7 L 3 4 Z"/></marker></defs>
+<rect width="510" height="410" fill="#1d2521"/>
+<path d="M 160 155 C 210 155 245 200 280 200 L 420 200 C 447.614 200 470 217.909 470 240 C 470 262.091 447.614 280 420 280 L 280 280 C 245 280 205 325 160 325 C 93.726 325 40 286.944 40 240 C 40 193.056 93.726 155 160 155 Z" class="body"/>
+<g data-handle="1"><path class="opening" d="M 121 239 Q 160 218 199 239 Q 160 256 121 239 Z"/>
+<ellipse data-curve="alpha" class="curve alpha" cx="160" cy="239" rx="74" ry="38"/>
+<path data-curve="beta" class="curve beta" d="M 162 248 C 180 269 180 305 162 325"/><path class="curve beta hidden" d="M 162 325 C 142 302 142 268 162 248"/>
+<path class="curve alpha" d="M 232 230 Q 236 239 231 249" marker-end="url(#arrow-alpha)"/><path class="curve beta" d="M 175 283 L 175 297" marker-end="url(#arrow-beta)"/>
+<text x="242" y="244" class="label alpha-label">α<tspan baseline-shift="sub" font-size="12">1</tspan></text>
+<text x="189" y="310" class="label beta-label">β<tspan baseline-shift="sub" font-size="12">1</tspan></text>
+</g>
+</svg>

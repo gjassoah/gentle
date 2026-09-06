@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import {writeFileSync} from 'node:fs';
+import {examples} from '../src/examples.js';
+const pages=await(await fetch('http://127.0.0.1:9222/json')).json();
+const ws=new WebSocket(pages.find(p=>p.type==='page').webSocketDebuggerUrl);await new Promise(r=>ws.onopen=r);
+let id=0;const pending=new Map(),errors=[];
+ws.onmessage=e=>{const x=JSON.parse(e.data);if(x.id){const p=pending.get(x.id);pending.delete(x.id);x.error?p.reject(Error(x.error.message)):p.resolve(x.result)}else if(x.method==='Runtime.exceptionThrown')errors.push(x.params.exceptionDetails.exception?.description||x.params.exceptionDetails.text)};
+const send=(method,params={})=>new Promise((resolve,reject)=>{const i=++id;pending.set(i,{resolve,reject});ws.send(JSON.stringify({id:i,method,params}))});
+const evaluate=async expression=>{const r=await send('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true});if(r.exceptionDetails)throw Error(r.exceptionDetails.exception?.description||r.exceptionDetails.text);return r.result.value};
+const waitFor=async expr=>{for(let i=0;i<150;i++){if(await evaluate(expr))return;await new Promise(r=>setTimeout(r,100))}throw Error('Timed out: '+expr)};
+const click=s=>evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);
+const change=(s,value)=>evaluate(`document.querySelector(${JSON.stringify(s)}).value=${JSON.stringify(value)};document.querySelector(${JSON.stringify(s)}).dispatchEvent(new Event('change'))`);
+const switchTo=async id=>{await click(`[data-algebra="${id}"]`);await waitFor(`document.querySelector('[data-algebra="${id}"]').getAttribute('aria-selected')==='true'`)};
+const loaded=`[...document.querySelectorAll('[data-surface]')].length>0&&[...document.querySelectorAll('[data-surface]')].every(i=>i.complete&&i.naturalWidth>0)`;
+await send('Runtime.enable');await send('Page.enable');await send('Page.navigate',{url:process.env.SURFACE_TEST_URL||'http://127.0.0.1:5173/'});await waitFor(`!!document.querySelector('#algebra-tabs')`);
+const collision=structuredClone(examples.dual);collision.arrows[0].label='e(1)';
+const disconnected=structuredClone(examples.aps1);disconnected.vertices.push({id:'isolated',label:'isolated',x:400,y:350});
+const big={name:'Genus ten',vertices:Array.from({length:21},(_,i)=>({id:String(i),label:String(i),x:60+i%7*100,y:90+Math.floor(i/7)*100})),arrows:[],relations:[]};
+for(const prefix of ['a','b'])for(let i=0;i<20;i++)big.arrows.push({id:prefix+i,label:prefix+i,source:String(i),target:String(i+1)});
+for(let i=0;i<19;i++)big.relations.push(['a'+i,'b'+(i+1)],['b'+i,'a'+(i+1)]);
+const session={format:'gentle-session-v2',activeId:'dual',algebras:[['dual',examples.dual,'2'],['collision',collision,'2'],['aps',examples.aps1,'0'],['disconnected',disconnected,'0'],['big',big,'0']].map(([id,quiver,characteristic])=>({id,quiver,characteristic,degree:2}))};
+await evaluate(`localStorage.setItem('gentle-session-v2',${JSON.stringify(JSON.stringify(session))})`);await send('Page.reload');await waitFor(`document.querySelector('#progress')?.textContent.includes('Complete')`);
+for(const algebra of ['dual','collision']){
+ await switchTo(algebra);if(algebra==='collision'){await click('#compute');await waitFor(`document.querySelector('#progress')?.textContent.includes('Complete')`)}await click('[data-tab="cohomology"]');await change('#basis-degree','0');
+ const central=await evaluate(`[...document.querySelectorAll('.cochain-output')].map(n=>n.textContent)`);
+ assert.deepEqual(central,algebra==='dual'?['e(1)','ε']:['e(1)','path("e(1)")']);
+ assert.equal(await evaluate(`document.querySelectorAll('.cochain-input').length`),0);
+ if(algebra==='dual')await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true}).then(x=>writeFileSync('/tmp/gentle-hh0.png',Buffer.from(x.data,'base64')));
+ await change('#basis-degree','1');
+ const outputs=await evaluate(`[...document.querySelectorAll('.cochain-output')].map(n=>n.textContent)`);assert.equal(outputs.length,2);assert.equal(new Set(outputs).size,2);assert.match(outputs[0],/e\(1\)/);assert.match(outputs[1],algebra==='dual'?/ε/:/path\("e\(1\)"\)/);
+ for(const width of [390,768]){await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:true});assert.ok(await evaluate(`document.documentElement.scrollWidth<=innerWidth`))}
+}
+await evaluate(`document.documentElement.dataset.theme='light'`);await switchTo('aps');await click('[data-tab="surface"]');await waitFor(loaded);assert.match(await evaluate(`document.querySelector('[data-surface]').src`),/assets\/surfaces\/g1-b1-p0.svg/);
+await click('#theme');await waitFor(`document.querySelector('[data-surface]')?.src.includes('-dark.svg')&&document.querySelector('[data-surface]').complete`);
+assert.equal(await evaluate(`getComputedStyle(document.querySelector('.surface-viewport')).backgroundColor`),'rgb(29, 37, 33)');
+await click('#theme');await waitFor(`document.querySelector('[data-surface]')?.src.includes('g1-b1-p0.svg')&&document.querySelector('[data-surface]').complete`);
+await switchTo('disconnected');await click('[data-tab="surface"]');await waitFor(loaded);assert.equal(await evaluate(`document.querySelectorAll('[data-surface]').length`),2);
+await switchTo('big');await click('[data-tab="surface"]');await waitFor(loaded);assert.match(await evaluate(`document.querySelector('[data-surface]').src`),/^data:image\/svg/);assert.match(await evaluate(`document.querySelector('.surface-figure h3').textContent`),/g = 10, b = 1, p = 0/);
+await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});assert.ok(await evaluate(`document.documentElement.scrollWidth<=innerWidth`));assert.ok(await evaluate(`document.querySelector('.surface-viewport').scrollWidth>document.querySelector('.surface-viewport').clientWidth`));
+await evaluate(`document.querySelector('.surface-viewport').scrollLeft=500`);assert.ok(await evaluate(`document.querySelector('.surface-viewport').scrollLeft>0`));
+await switchTo('aps');await click('[data-tab="surface"]');await waitFor(loaded);await click('#theme');await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true}).then(x=>writeFileSync('/tmp/gentle-surface-mobile.png',Buffer.from(x.data,'base64')));
+await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true}).then(x=>writeFileSync('/tmp/gentle-surface-desktop.png',Buffer.from(x.data,'base64')));
+assert.deepEqual(errors,[]);console.log('Browser checks passed: distinct char-2 and label-collision representatives, static surfaces, disconnected components, genus-ten fallback without calculus, mobile scrolling and dark mode.');ws.close();

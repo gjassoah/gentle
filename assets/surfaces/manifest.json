@@ -1,0 +1,12 @@
+{
+  "version": "2",
+  "genus": 8,
+  "boundaries": 8,
+  "punctures": 8,
+  "count": 729,
+  "imageCount": 1458,
+  "themes": [
+    "light",
+    "dark"
+  ]
+}
