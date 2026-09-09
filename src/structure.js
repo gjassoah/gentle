@@ -1,3 +1,4 @@
+import {canonicalCharacteristic} from './linear.js';
 // Combinatorics of the permitted and forbidden successor graphs.
 export function structure(A){
  const {q,paths,rel}=A,as=new Map(q.arrows.map(a=>[a.id,a])),parent=new Map(q.vertices.map(v=>[v.id,v.id]));
@@ -58,7 +59,7 @@ export function ribbon(A){
 
 // A finite description of all homogeneous HH* basis families in Theorem 3.12.
 export function cohomologyFamilies(A,characteristic){
- const s=structure(A),p=String(characteristic),{q,paths,rel}=A,as=new Map(q.arrows.map(a=>[a.id,a]));
+ const s=structure(A),p=canonicalCharacteristic(characteristic),{q,paths,rel}=A,as=new Map(q.arrows.map(a=>[a.id,a]));
  const families=[];
  families.push({type:'I',name:'Component units',degree:0,multiplicity:s.components,description:'One unit for each connected component.'});
  const central=paths.filter(a=>a.a.length&&a.s===a.e&&!q.arrows.some(b=>b.target===a.s&&!rel.has(JSON.stringify([b.id,a.a[0]])))&&!q.arrows.some(b=>b.source===a.e&&!rel.has(JSON.stringify([a.a.at(-1),b.id]))));
@@ -71,7 +72,7 @@ export function cohomologyFamilies(A,characteristic){
 }
 export function familyDimension(families,n){return families.reduce((sum,f)=>sum+((f.step?n>=f.degree&&(n-f.degree)%f.step===0:n===f.degree)?f.multiplicity:0),0)}
 export function homologyFormula(A,characteristic,n){
- const s=structure(A),p=Number(characteristic);let hh=n===0?A.q.vertices.length:0,bRank=0,deRham=n===0?A.q.vertices.length:0,hc=n%2===0?A.q.vertices.length:0;
+ const s=structure(A),p=Number(canonicalCharacteristic(characteristic));let hh=n===0?A.q.vertices.length:0,bRank=0,deRham=n===0?A.q.vertices.length:0,hc=n%2===0?A.q.vertices.length:0;
  for(const c of s.cycles)for(let m=c.length;m<=n+1;m+=c.length){if(p!==2&&(m+1)*c.length%2)continue;const divisible=p!==0&&(m/c.length)%p===0;
   if(n===m||n===m-1){hh++;if(divisible)deRham++}
   if(n===m-1&&!divisible)bRank++;
@@ -82,6 +83,7 @@ export function homologyFormula(A,characteristic,n){
 }
 
 export function ringPresentation(A,characteristic){
+ characteristic=canonicalCharacteristic(characteristic);
  const {q}=A,seen=new Set(),components=[];
  for(const vertex of q.vertices)if(!seen.has(vertex.id)){const stack=[vertex.id],ids=new Set();while(stack.length){const id=stack.pop();if(ids.has(id))continue;ids.add(id);seen.add(id);for(const a of q.arrows){if(a.source===id)stack.push(a.target);if(a.target===id)stack.push(a.source)}}
   const sub={...A,q:{vertices:q.vertices.filter(v=>ids.has(v.id)),arrows:q.arrows.filter(a=>ids.has(a.source)),relations:q.relations},paths:A.paths.filter(p=>ids.has(p.s))};const families=cohomologyFamilies(sub,characteristic),s=structure(sub);

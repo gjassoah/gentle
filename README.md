@@ -38,6 +38,8 @@ Only the application and its documentation are copied into `dist/`. Computation 
 - Gentle-condition and finite-dimensionality validation.
 - Exact rational arithmetic or prime-field arithmetic, including characteristic two.
 - Hochschild cohomology and homology: dimensions and explicit quotient-basis representatives.
+
+Displayed cochains use the notation `[a₁|…|aₙ] ↦ b`: the normalized tensor of inputs `a₁,…,aₙ` is sent to output `b`, and unlisted inputs map to zero. For example, `[ε|ε] ↦ e(1)` and `[ε|ε] ↦ ε` are different cochains because their outputs differ. Chains write the leading factor first, as `a₀[a₁|…|aₙ]`.
 - Cup product, Gerstenhaber bracket, signed cap product, Connes operator, and a documented normalization of the Lie derivative on homogeneous linear combinations.
 - Cyclic homology from the mixed-complex totalization; de Rham dimensions and Connes ranks.
 - All-degree cohomology and homology families, full cohomology ring presentation, and formula queries through degree 100000.
@@ -76,6 +78,12 @@ npm run build
 ```
 
 The generator writes a manifest that the app reads automatically, so extending the range requires no source edits. `--output DIRECTORY` selects another destination; the application serves `assets/surfaces/`. A run is limited to 20000 themed images. Each component's **Download SVG** button exports a standalone, scalable image. The diagram viewport supports touch and keyboard horizontal scrolling.
+
+## Validation and research use
+
+This software has undergone AI-assisted, machine-checked validation including independent low-degree reference computations, differential testing, bounded exhaustive testing, metamorphic/property testing, and domain-specific mutation testing. These procedures provide substantial evidence of correctness but do not constitute a formal proof of correctness of the complete implementation.
+
+Selected low-degree Hochschild homology computations can also be exported with exact certificates checked by an implementation-independent Python verifier. See [`validation/VALIDATION-REPORT.md`](validation/VALIDATION-REPORT.md) for measured bounds, counts, fields, degrees, mutation results, limitations, and reproduction commands.
 
 ## Verification
 

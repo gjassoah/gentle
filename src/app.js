@@ -1,4 +1,5 @@
 import {validate} from './engine.js';
+import {canonicalCharacteristic} from './linear.js';
 import {examples} from './examples.js';
 import {latexReport,latexDerivedReport} from './export.js';
 import {surfaceComponents,ribbonFromQuiver} from './structure.js';
@@ -6,6 +7,8 @@ import {surfaceSVG,surfaceLayout,surfaceAssetPath,SURFACE_DIAGRAM_VERSION} from 
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clone=x=>structuredClone(x),KEY='gentle-workspace-v1';
+// Keep invalid drafts editable; every successful field selection is canonical.
+function characteristicInput(value){try{return canonicalCharacteristic(value)}catch{return String(value)}}
 let surfaceManifest=null;
 const surfaceCache=new Map();
 function cachedSurface(c,theme=document.documentElement.dataset.theme||'light'){const key=`${c.genus},${c.boundaries},${c.punctures},${theme}`;if(!surfaceCache.has(key))surfaceCache.set(key,surfaceSVG(c.genus,c.boundaries,c.punctures,theme));return surfaceCache.get(key)}
@@ -22,13 +25,13 @@ let q=clone(examples.triangle),characteristic='0',degree=3,report=null,dirty=tru
 let op={type:'cup',p:0,q:0};
 $('#results').addEventListener('input',e=>{if(e.target.matches('[data-coeff]')){op.coefficients={left:$$('[data-coeff=left]').map(x=>x.value),right:$$('[data-coeff=right]').map(x=>x.value)}}});
 let derived=null,comparison=null,activeId=crypto.randomUUID(),algebras=[],closedAlgebras=[],switching=false;
-try{const saved=JSON.parse(localStorage.getItem(KEY));if(saved&&validFile(saved.quiver)){q=saved.quiver;characteristic=String(saved.characteristic??0);degree=Number(saved.degree??3);if(!Number.isInteger(degree)||degree<0||degree>128)degree=3}}catch{}
+try{const saved=JSON.parse(localStorage.getItem(KEY));if(saved&&validFile(saved.quiver)){q=saved.quiver;characteristic=characteristicInput(saved.characteristic??0);degree=Number(saved.degree??3);if(!Number.isInteger(degree)||degree<0||degree>128)degree=3}}catch{}
 try{document.documentElement.dataset.theme=localStorage.getItem('gentle-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch{}
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('visible');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').classList.remove('visible'),4000)}
 function capture(){const state={id:activeId,q,characteristic,degree,report,dirty,tab,selected,tool,pending,undo,redo,worker,callbacks,operations,selectedDegree,op,derived,comparison,progress:$('#progress').textContent};const i=algebras.findIndex(a=>a.id===activeId);if(i<0)algebras.push(state);else algebras[i]=state;return state}
 function sessionData(){capture();return {format:'gentle-session-v2',activeId,algebras:algebras.map(a=>({id:a.id,quiver:a.q,characteristic:a.characteristic,degree:a.degree}))}}
 function save(){try{localStorage.setItem('gentle-session-v2',JSON.stringify(sessionData()));$('#save-state').textContent='All quiver tabs saved on this device'}catch{$('#save-state').textContent='Browser storage unavailable; export your session'}renderAlgebraTabs()}
-function blankState(quiver,char='0',n=3){return {id:crypto.randomUUID(),q:clone(quiver),characteristic:String(char),degree:Number.isInteger(n)&&n>=0&&n<=128?n:3,report:null,dirty:true,tab:'overview',selected:null,tool:'select',pending:null,undo:[],redo:[],worker:null,callbacks:new Map(),operations:[],selectedDegree:0,op:{type:'cup',p:0,q:0},derived:null,comparison:null,progress:''}}
+function blankState(quiver,char='0',n=3){return {id:crypto.randomUUID(),q:clone(quiver),characteristic:characteristicInput(char),degree:Number.isInteger(n)&&n>=0&&n<=128?n:3,report:null,dirty:true,tab:'overview',selected:null,tool:'select',pending:null,undo:[],redo:[],worker:null,callbacks:new Map(),operations:[],selectedDegree:0,op:{type:'cup',p:0,q:0},derived:null,comparison:null,progress:''}}
 function activate(a){({q,characteristic,degree,report,dirty,tab,selected,tool,pending,undo,redo,worker,callbacks,operations,selectedDegree,op,derived,comparison}=a);activeId=a.id;busy=false;drag=null;syncSettings();setTool(tool);renderSetup();$('#progress').textContent=a.progress||'';$$('[data-tab]').forEach(b=>{b.classList.toggle('active',b.dataset.tab===tab);b.setAttribute('aria-current',b.dataset.tab===tab?'page':'false')});renderResults();save()}
 async function switchAlgebra(id){if(id===activeId||switching)return;const target=algebras.find(a=>a.id===id);if(!target)return;switching=true;try{if(callbacks.size){stopWorker();await new Promise(resolve=>setTimeout(resolve,0))}capture();activate(target)}finally{switching=false}}
 function addAlgebra(quiver={name:'Untitled algebra',vertices:[],arrows:[],relations:[]},char=characteristic,n=degree){if(switching)return;if(algebras.length>=40){toast('The workspace supports up to 40 algebra tabs. Export and close a tab first.');return}capture();const a=blankState(quiver,char,n);algebras.push(a);return switchAlgebra(a.id)}
@@ -80,8 +83,8 @@ $$('[data-tool]').forEach(b=>b.onclick=()=>setTool(b.dataset.tool));$('#undo').o
 $('#relations').onclick=e=>{const b=e.target.closest('[data-remove-relation]');if(!b)return;checkpoint();q.relations.splice(Number(b.dataset.removeRelation),1);changed()};
 $('#arrange').onclick=()=>{checkpoint();q.vertices.forEach((v,i)=>{const t=2*Math.PI*i/q.vertices.length-Math.PI/2;v.x=q.vertices.length===1?400:400+210*Math.cos(t);v.y=q.vertices.length===1?220:220+135*Math.sin(t)});draw();save();renderSetup()};
 $('#name').onchange=()=>{checkpoint();q.name=$('#name').value.trim()||'Untitled algebra';save();renderSetup()};
-$('#characteristic').onchange=()=>{const value=$('#characteristic').value;$('#custom-prime').hidden=value!=='custom';if(value==='custom'){checkpoint();characteristic=$('#custom-prime').value;invalidate();$('#custom-prime').focus();return}checkpoint();characteristic=value;invalidate()};
-$('#custom-prime').onchange=()=>{checkpoint();characteristic=$('#custom-prime').value;invalidate()};
+$('#characteristic').onchange=()=>{const value=$('#characteristic').value;$('#custom-prime').hidden=value!=='custom';if(value==='custom'){checkpoint();characteristic=characteristicInput($('#custom-prime').value);invalidate();$('#custom-prime').focus();return}checkpoint();characteristic=canonicalCharacteristic(value);invalidate()};
+$('#custom-prime').onchange=()=>{checkpoint();characteristic=characteristicInput($('#custom-prime').value);syncSettings();invalidate()};
 $('#max-degree').onchange=()=>{const n=Number($('#max-degree').value);if(!Number.isInteger(n)||n<0||n>128){toast('Choose an integer degree from 0 to 128.');$('#max-degree').value=degree;return}checkpoint();degree=n;invalidate()};
 $('#new').onclick=async()=>{await addAlgebra();setTool('vertex')};
 $('#examples').onchange=e=>{const ex=examples[e.target.value];if(!ex)return;checkpoint();q=clone(ex);selected=null;setTool('select');syncSettings();changed();e.target.value=''};

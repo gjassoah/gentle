@@ -8,6 +8,15 @@
     "test": "node --test tests/*.test.js",
     "check": "node --check src/app.js && node --check src/engine.js && node --check src/linear.js && node --check src/structure.js && node --check src/worker.js && node --check src/export.js && node --check src/derived.js && node --check src/surface-diagram.js && node --check scripts/generate-surfaces.mjs",
     "build": "node scripts/build.mjs",
-    "surfaces": "node scripts/generate-surfaces.mjs"
+    "surfaces": "node scripts/generate-surfaces.mjs",
+    "validate:oracle": "python3 -m unittest validation.oracle.test_oracle",
+    "validate:differential": "python3 -m validation.differential",
+    "validate:exhaustive": "python3 -m validation.exhaustive --level quick",
+    "validate:properties": "node validation/properties.mjs --level quick",
+    "validate:mutations": "python3 -m validation.mutations",
+    "validate:regressions": "python3 -m unittest validation.test_protocol validation.test_mutations",
+    "validate:certificate": "python3 -m unittest validation.verifier.test_verifier",
+    "validate:quick": "python3 -m validation.report --level quick",
+    "validate:extended": "python3 -m validation.report --level extended"
   }
 }

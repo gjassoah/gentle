@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Calculus,validate} from '../src/engine.js';
-import {field,apply,addScaled} from '../src/linear.js';
+import {field,canonicalCharacteristic,apply,addScaled} from '../src/linear.js';
 import {examples} from '../src/examples.js';
 test('exact rationals and prime fields',()=>{const F=field();assert.equal(F.str(F.add(F.from('1/3'),F.from('2/7'))),'13/21');assert.equal(F.str(F.mul(F.from('9007199254740993'),F.from(3))),'27021597764222979');assert.equal(field(5).str(field(5).from('1/2')),'3');assert.throws(()=>field(4));assert.throws(()=>field(5).from('1/5'))});
 test('gentle validation rejects infinite paths and branching',()=>{const q=structuredClone(examples.dual);q.relations=[];assert.match(validate(q).join(),/infinite/);const r=structuredClone(examples.kronecker);r.arrows.push({...r.arrows[0],id:'c',label:'c'});assert.match(validate(r).join(),/two/)});
@@ -22,7 +22,17 @@ test('dual numbers: cup, bracket, cap and Connes on actual classes',()=>{const c
 });
 test('characteristic two has a nonzero square of the degree-one derivative',()=>{const c=new Calculus(examples.dual,2);assert.deepEqual(c.operation('cup',1,['1','0'],1,['1','0']).coefficients,['1','0']);assert.deepEqual(c.operation('bracket',1,['1','0'],0,['0','1']).coefficients,['1','0'])});
 
-import {structure,ribbon,cohomologyFamilies,familyDimension,homologyFormula} from '../src/structure.js';
+import {structure,ribbon,cohomologyFamilies,familyDimension,homologyFormula,ringPresentation} from '../src/structure.js';
+test('public formula APIs validate and normalize characteristics',()=>{
+ const A=new Calculus(examples.dual).A;
+ for(const p of [0,2,3,5])for(const input of [p,String(p),'00'+p,BigInt(p)]){
+  assert.equal(canonicalCharacteristic(input),String(p));
+  assert.deepEqual(cohomologyFamilies(A,input),cohomologyFamilies(A,p));
+  assert.deepEqual(ringPresentation(A,input),ringPresentation(A,p));
+  assert.deepEqual(homologyFormula(A,input,5),homologyFormula(A,p,5));
+ }
+ for(const invalid of ['',1,4,'04','2.0','-2'])for(const f of [canonicalCharacteristic,field,p=>cohomologyFamilies(A,p),p=>ringPresentation(A,p),p=>homologyFormula(A,p,1)])assert.throws(()=>f(invalid),/Characteristic|characteristic/);
+});
 test('ribbon graphs recover known surfaces and AAG data',()=>{for(const [name,aag,g] of [['field',[[2,0,1]],0],['a3',[[4,2,1]],0],['dual',[[0,1,1],[1,0,1]],0],['triangle',[[0,3,1],[3,0,1]],0],['kronecker',[[1,1,2]],0]]){const r=ribbon(new Calculus(examples[name]).A);assert.deepEqual(r.aag.map(x=>[...x.pair,x.multiplicity]).sort(),aag.sort());assert.equal(r.genus,g)}});
 test('paper all-degree formulas agree with both resolutions and the cyclic total complex',()=>{
  const qs=Object.values(examples).map(x=>structuredClone(x));

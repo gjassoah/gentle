@@ -1,10 +1,14 @@
 // Exact arithmetic. Scalars are reduced rational pairs, including over prime fields.
 const gcd=(a,b)=>{a=a<0n?-a:a;b=b<0n?-b:b;while(b){[a,b]=[b,a%b]}return a};
-export function field(characteristic=0){
+export function canonicalCharacteristic(characteristic=0){
  if(!/^\d+$/.test(String(characteristic)))throw Error('Characteristic must be 0 or a prime integer.');
  const p=BigInt(characteristic);
  if(p<0n || p===1n || p>2147483647n)throw Error('Characteristic must be 0 or a prime at most 2147483647.');
  if(p>0n)for(let d=2n;d*d<=p;d++)if(p%d===0n)throw Error('The characteristic must be prime.');
+ return String(p);
+}
+export function field(characteristic=0){
+ const p=BigInt(canonicalCharacteristic(characteristic));
  const invMod=a=>{let b=p,x=1n,y=0n;while(b){const q=a/b;[a,b]=[b,a-q*b];[x,y]=[y,x-q*y]}if(a!==1n)throw Error('Division by zero in the field.');return (x%p+p)%p};
  const norm=(a,b=1n)=>{if(!b)throw Error('Division by zero.');if(p){a=((a%p+p)%p)*invMod((b%p+p)%p)%p;return [a,1n]}if(b<0n){a=-a;b=-b}const g=gcd(a,b);return [a/g,b/g]};
  const z=[0n,1n],o=[1n,1n];

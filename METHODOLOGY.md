@@ -97,6 +97,8 @@ The derived calculation runs independently of Hochschild degree bounds. It const
 
 ### Validation and representatives
 
+In positive degree, a displayed cochain `[a₁|…|aₙ] ↦ b` sends the normalized tensor of inputs `a₁,…,aₙ` to the output path or idempotent `b`; unlisted inputs map to zero. Thus `[ε|ε] ↦ e(1)` differs from `[ε|ε] ↦ ε` because the outputs differ. Chains use `a₀[a₁|…|aₙ]`, with `a₀` written before the bracket.
+
 The tests reproduce the first pair of APS §9: one-boundary genus-one surfaces with two marked points and winding `−2`, but gcd invariants 0 and 2. Additional ribbon fixtures cover both parity branches. Two genus-two ribbon graphs with ordered threads `[0,1,2,3,4]` and respectively `[0,1,2,3,4]` or `[0,3,4,1,2]` have the same boundary pair `(2,−6)` but Arf invariants 1 and 0. Enumerating the quadratic form's Gauss sum independently checks these Arf values. Generated presentations test independence from identifiers, order and spanning-tree choices; these tests do not constitute an independent mathematical certification of the new ribbon algorithm.
 
 Representative terms now export structured input and output paths, including the distinction between idempotents and positive-length paths. For dual numbers in characteristic two, each positive degree has the cochains `[ε|…|ε] ↦ e(1)` and `[ε|…|ε] ↦ ε`, and the chains `e(1)[ε|…|ε]` and `ε[ε|…|ε]`. The interface emphasizes the cochain output or leading chain factor. In degree zero, a cochain with central value ε has input `e(1)`, not ε; this domain-label error has also been corrected.

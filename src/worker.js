@@ -3,8 +3,8 @@ import {structure,ribbon,cohomologyFamilies,familyDimension,homologyFormula,ring
 import {apply,reducer,quotient} from './linear.js';
 import {derivedInvariant,compareDerived} from './derived.js';
 let calculus;
-function structuralData(characteristic){const s=structure(calculus.A);s.ribbon=ribbon(calculus.A);return {structure:s,ring:ringPresentation(calculus.A,characteristic),families:cohomologyFamilies(calculus.A,characteristic)}}
-function formulaReport(degree,characteristic,limitation){const data=structuralData(characteristic),rows=[];for(let n=0;n<=degree;n++){const f=homologyFormula(calculus.A,characteristic,n);rows.push({degree:n,hhCo:familyDimension(data.families,n),hhHo:f.hh,hc:f.hc,deRham:f.deRham,connesRank:f.bRank,coBasis:null,hoBasis:null,cyBasis:null,coSize:'—',hoSize:'—',coBoundaryRank:'—',hoBoundaryRank:'—'})}return {...data,engine:ENGINE_VERSION,mode:'formulas',limitation,characteristic:String(calculus.F.p),maxDegree:degree,algebraDimension:calculus.A.paths.length,paths:calculus.A.paths.map(p=>p.label),rows,checks:['Gentle conditions and finite dimensionality','Prime characteristic validated','Ribbon half-edge pairing and surface Euler characteristic'],convention:'Dimensions use the paper’s complete-circuit formulas. Paths are written in left-to-right travel order. Bar representatives and their differential checks were not completed for this report.'}}
+function structuralData(){const characteristic=calculus.F.p,s=structure(calculus.A);s.ribbon=ribbon(calculus.A);return {structure:s,ring:ringPresentation(calculus.A,characteristic),families:cohomologyFamilies(calculus.A,characteristic)}}
+function formulaReport(degree,limitation){const data=structuralData(),rows=[];for(let n=0;n<=degree;n++){const f=homologyFormula(calculus.A,calculus.F.p,n);rows.push({degree:n,hhCo:familyDimension(data.families,n),hhHo:f.hh,hc:f.hc,deRham:f.deRham,connesRank:f.bRank,coBasis:null,hoBasis:null,cyBasis:null,coSize:'—',hoSize:'—',coBoundaryRank:'—',hoBoundaryRank:'—'})}return {...data,engine:ENGINE_VERSION,mode:'formulas',limitation,characteristic:String(calculus.F.p),maxDegree:degree,algebraDimension:calculus.A.paths.length,paths:calculus.A.paths.map(p=>p.label),rows,checks:['Gentle conditions and finite dimensionality','Prime characteristic validated','Ribbon half-edge pairing and surface Euler characteristic'],convention:'Dimensions use the paper’s complete-circuit formulas. Paths are written in left-to-right travel order. Bar representatives and their differential checks were not completed for this report.'}}
 self.onmessage=({data})=>{const {id,type}=data;try{
  let result;
  if(type==='derived')result=derivedInvariant(data.quiver);
@@ -13,10 +13,10 @@ self.onmessage=({data})=>{const {id,type}=data;try{
  else if(type==='compute'){
   if(!Number.isInteger(data.degree)||data.degree<0||data.degree>128)throw Error('Choose an integer degree from 0 to 128.');
   calculus=new Calculus(data.quiver,data.characteristic);
-  try{result=calculus.report(data.degree,message=>self.postMessage({id,progress:message}))}catch(error){if(!/limit|exceeds/.test(error.message))throw error;calculus=new Calculus(data.quiver,data.characteristic);result=formulaReport(data.degree,data.characteristic,error.message)}
+  try{result=calculus.report(data.degree,message=>self.postMessage({id,progress:message}))}catch(error){if(!/limit|exceeds/.test(error.message))throw error;calculus=new Calculus(data.quiver,calculus.F.p);result=formulaReport(data.degree,error.message)}
   if(result.mode!=='formulas'){
-   Object.assign(result,structuralData(data.characteristic));result.mode='checked';
-   for(const row of result.rows){const f=homologyFormula(calculus.A,data.characteristic,row.degree);if(f.hh!==row.hhHo||f.hc!==row.hc||familyDimension(result.families,row.degree)!==row.hhCo)throw Error('Paper formula cross-check failed in degree '+row.degree);row.deRham=f.deRham;row.connesRank=f.bRank}
+   Object.assign(result,structuralData());result.mode='checked';
+   for(const row of result.rows){const f=homologyFormula(calculus.A,calculus.F.p,row.degree);if(f.hh!==row.hhHo||f.hc!==row.hc||familyDimension(result.families,row.degree)!==row.hhCo)throw Error('Paper formula cross-check failed in degree '+row.degree);row.deRham=f.deRham;row.connesRank=f.bRank}
    for(let n=0;n<data.degree;n++){
     const source=calculus.group('ho',n),target=calculus.group('ho',n+1),F=calculus.F;
     const B=source.basis.map(v=>target.project(apply(calculus.connes(n),v,calculus.space('ho',n+1).items.length,F)));
