@@ -1,0 +1,27 @@
+{
+  "name": "gentle-calculus",
+  "version": "0.8.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npm run docs && python3 -m http.server 5173",
+    "test": "node --test tests/*.test.js",
+    "check": "node --check src/app.js && node --check src/convention.js && node --check src/presentation.js && node --check src/mathml.js && node --check src/engine.js && node --check src/linear.js && node --check src/structure.js && node --check src/worker.js && node --check src/export.js && node --check src/derived.js && node --check src/surface-diagram.js && node --check tools/generate-surfaces.mjs && node --check src/theme.js && node --check tools/markdown.mjs && node tools/check-contrast.mjs && node tools/check-interface.mjs && node --check src/cards.js && node --check src/cards-data.js && node --check tools/tex-mathml.mjs && node --check tools/generate-cards.mjs && node --check tests/browser-cards.mjs",
+    "build": "node tools/build.mjs",
+    "surfaces": "node tools/generate-surfaces.mjs",
+    "validate:oracle": "python3 -m unittest validation.oracle.test_oracle",
+    "validate:differential": "python3 -m validation.differential",
+    "validate:exhaustive": "python3 -m validation.exhaustive --level quick",
+    "validate:properties": "node validation/properties.mjs --level quick",
+    "validate:mutations": "python3 -m validation.mutations",
+    "validate:regressions": "python3 -m unittest validation.test_protocol validation.test_mutations validation.test_product_protocol validation.test_product_comparison",
+    "validate:certificate": "python3 -m unittest validation.verifier.test_verifier",
+    "validate:quick": "python3 -m validation.report --level quick",
+    "validate:extended": "python3 -m validation.report --level extended",
+    "cards": "node tools/generate-cards.mjs",
+    "docs": "node tools/markdown.mjs",
+    "verify": "tools/verify.sh",
+    "verify:full": "tools/verify.sh --full",
+    "bench": "node --expose-gc tools/bench.mjs"
+  }
+}

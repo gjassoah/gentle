@@ -1,0 +1,12 @@
+dist/
+node_modules/
+*.log
+__pycache__/
+*.py[cod]
+.cache/
+.local/
+.tools/
+
+/methods.html
+/about.html
+bench/
