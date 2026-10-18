@@ -88,3 +88,5 @@ dialog[open]{display:flex;flex-direction:column}.dialog-top{flex:none;gap:12px}.
 .information-card math,#modal-body .information-card math{overflow:visible}
 .card-statement{overflow-x:auto;overflow-y:hidden}
 .information-card th{white-space:nowrap}
+/* On desktop the drawing area has its own height and does not stretch to the Algebra panel beside it. */
+@media(min-width:801px){.editor-grid{align-items:start}.editor-panel{position:sticky;top:16px}.editor-panel>.canvas-wrap{flex:none;display:block}.editor-panel>.canvas-wrap>#quiver{flex:none;height:clamp(340px,48vh,440px);min-height:0}}
