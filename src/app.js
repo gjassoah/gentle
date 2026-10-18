@@ -13,7 +13,7 @@ import {surfaceComponents,ribbonFromQuiver} from './structure.js';
 import {surfaceSVG,surfaceLayout,surfaceAssetPath,SURFACE_DIAGRAM_VERSION} from './surface-diagram.js';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const VERSION='0.8.0';
+const VERSION='0.8.1';
 for(const [selector,label,kind,n] of [['cohomology','Cohomology','co','∗'],['homology','Homology','ho','∗'],['cyclic','Cyclic','cyclic','∗'],['lie','Lie algebra','co',1]])$(`[data-tab="${selector}"]`).innerHTML=`${label} ${group(kind,n,false)}`;
 $('#version').textContent=`v${VERSION}`;
 $('#algebra-presentation-formula').innerHTML=mathProse(invariantMarkup.algebraPresentation);
