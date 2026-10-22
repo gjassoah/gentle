@@ -5,4 +5,4 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 rm -rf dist
 npm run build
-scp -r dist/. gjasso@mictlan:gentle/
+scp -r dist/. gjasso@mictlan:www/experiments/gentle/
