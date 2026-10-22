@@ -7,8 +7,7 @@
 set -euo pipefail
 [ $# -eq 0 ] || [ "$*" = --dry-run ] || { echo "Usage: $0 [--dry-run]" >&2; exit 2; }
 
-# check_target gjasso@mictlan www/experiments/gentle gentle "${1:-}"
-rsync --delete empties the target of everything else, so it must be this site's own directory:
+# rsync --delete empties the target of everything else, so it must be this site's own directory:
 # missing, empty, or marked by an earlier deploy with a file .deploy-site holding the site's name.
 check_target() {  # host directory name [--dry-run]
   local remote='d=$1 n=$2
