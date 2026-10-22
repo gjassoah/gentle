@@ -22,7 +22,7 @@ Open **http://localhost:5173**. This uses Python 3's static HTTP server. The app
 npm run build
 ```
 
-Upload the contents of `dist/` to any static web host. No routing rewrites or server-side runtime are needed. The app works at either a domain root or a subdirectory. Serve JavaScript with its standard MIME type. For a local deployment preview:
+`tools/deploy.sh` builds and copies `dist/` with `rsync --delete` to `gjasso@mictlan:~/www/experiments/gentle/` (`--dry-run` lists the changes). Otherwise, upload the contents of `dist/` to any static web host. No routing rewrites or server-side runtime are needed. The app works at either a domain root or a subdirectory. Serve JavaScript with its standard MIME type. For a local deployment preview:
 
 ```sh
 python3 -m http.server 5173 --directory dist

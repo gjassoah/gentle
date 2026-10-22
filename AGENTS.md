@@ -9,7 +9,7 @@ Gentle is a browser-based calculus workspace (quivers, complexes, surfaces) with
 - `tests/`: Node unit tests (`npm test`) and browser checks (`tests/browser*.mjs`).
 - `validation/`: independent validation, see `validation/VALIDATION-REPORT.md` and `npm run validate:*`.
 - `docs/METHODOLOGY.md`: shipped at the site root by the build. `docs/csss26/`: the concordance of the application with the published CSSS26.
-- `tools/deploy.sh`: builds and copies `dist/` to the server. It publishes the live site: ask Gustavo first each time.
+- `tools/deploy.sh`: builds and copies `dist/` to the server with rsync --delete (`--dry-run` lists the changes). It publishes the live site: ask Gustavo first each time.
 - Working records (Codex task files, notes and answers, audits, source extractions, card reviews and the card source passages) are kept in the private repository `../gentle-private` (`gjassoah/gentle-private`), never here. Codex jobs are run from there with `tools/codex_run.sh`; they work in this directory and write their records there. Never mention errors, misprints or inconsistencies of the papers in this repository.
 
 ## Rules
